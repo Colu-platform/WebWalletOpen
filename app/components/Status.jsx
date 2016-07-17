@@ -1,12 +1,10 @@
 var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
 var GeneralActions = require('../actions/GeneralActions');
-var consts = require('../consts.js');
 
 var Status = React.createClass({
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
-        GeneralActions.changeView(consts.initialView);
+        GeneralActions.resetStatus();
     },
     onChange: function(state) {
         this.setState(state);
@@ -17,13 +15,13 @@ var Status = React.createClass({
     render: function () {
         if (this.state && this.state.updatedStatus) {
             return (
-                <div className="ok">
+                <div className="status ok">
                     {this.state && this.state.updatedStatus}
                 </div>
             );
         } else if (this.state && this.state.error) {
             return (
-                <div className="error">
+                <div className="status error">
                     {this.state && this.state.error}
                 </div>
             );

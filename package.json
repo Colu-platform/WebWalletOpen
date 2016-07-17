@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "alt": "^0.17.8",
+    "colu": "^0.10.21",
     "express": "4.13.3",
+    "hiredis": "^0.5.0",
     "react": "^15.2.1",
     "react-router": "^2.5.2"
   },

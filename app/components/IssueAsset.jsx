@@ -1,13 +1,10 @@
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
-var GeneralActions = require('../actions/GeneralActions');
-var consts = require('../consts.js');
 var Status = require('./Status.jsx');
 
 var IssueAsset = React.createClass({
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
-        GeneralActions.changeView(consts.initialView);
     },
     onChange: function(state) {
         this.setState(state);
@@ -32,7 +29,6 @@ var IssueAsset = React.createClass({
 
 		e.preventDefault();
 		//Display the status (issued successfully/failed) with details that will be updated in the issueAsset callback
-		//GeneralActions.changeView(consts.statusView);
 		ColuActions.issueAsset(asset);
 	},
 	render: function () {

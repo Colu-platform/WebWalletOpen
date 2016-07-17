@@ -3,14 +3,14 @@ var consts = require('../consts.js');
 
 function GeneralActions() {
   this.generateActions(
-    'changeViewSuccess'
+    'resetStatus'
   );
 }
 
 //change the view inside the wallet
-GeneralActions.prototype.changeView = function(currentView) {
+GeneralActions.prototype.resetStatus = function() {
   var that = this;
-  that.actions.changeViewSuccess(currentView); 
+  that.actions.resetStatus(); 
 };
 
 module.exports = alt.createActions(GeneralActions);

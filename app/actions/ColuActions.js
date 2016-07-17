@@ -1,5 +1,6 @@
 var alt = require('../alt.js');
 var consts = require('../consts.js');
+var Colu = require('colu');
 
 function ColuActions() {
   this.generateActions(

@@ -104,6 +104,60 @@ select {
 .assets-grid {
     width: 80%;
 }
+
+.wallet-main {
+    background: #ffffff;
+    margin:20px;
+}
+
+.wallet-content {
+    display: flex;
+    flex-direction: row;
+    min-height: 400px;
+}
+
+.wallet-nav {
+    display: flex;
+    width:20%;
+    background: #d2d0c4;
+    flex-direction: column;
+}
+
+.view-content {
+    width: 80%;
+}
+.private-seed {
+    font-size: 32px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #a7a59c;
+    color: #d2d0c4;
+    text-align: center;
+    overflow: hidden;
+}
+
+.assets-grid {
+    padding: 20px;
+}
+
+.row {
+    margin:5px;
+    display: flex;
+    background: #e7e5d7;
+    color:grey;
+    line-height: 10px;
+}
+.cell {
+    padding: 20px;
+}
+
+.address-cell, .assetid-cell {
+    width: 45%;
+}
+.amount-cell {
+    width: 10%;
+}
+
 /*********************************
 *           INPUT BOX
 **********************************/
@@ -277,57 +331,6 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
     transition: width .2s ease-out, padding-top .2s ease-out;
 }
 
-.wallet-main {
-    background: #ffffff;
-    margin:20px;
-}
-
-.wallet-content {
-    display: flex;
-    flex-direction: row;
-    min-height: 400px;
-}
-
-.wallet-nav {
-    display: flex;
-    width:20%;
-    background: #d2d0c4;
-    flex-direction: column;
-}
-
-.view-content {
-    width: 80%;
-}
-.private-seed {
-    font-size: 32px;
-    font-weight: bold;
-    text-transform: uppercase;
-    background: #a7a59c;
-    color: #d2d0c4;
-    text-align: center;
-}
-
-.assets-grid {
-    padding: 20px;
-}
-
-.row {
-    margin:5px;
-    display: flex;
-    background: #e7e5d7;
-    color:grey;
-    line-height: 10px;
-}
-.cell {
-    padding: 20px;
-}
-
-.address-cell, .assetid-cell {
-    width: 45%;
-}
-.amount-cell {
-    width: 10%;
-}
 /****************************
 *      ANIMATIONS
 ****************************/

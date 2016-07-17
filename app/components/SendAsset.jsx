@@ -1,6 +1,5 @@
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
-var GeneralActions = require('../actions/GeneralActions');
 var AssetsGrid = require('./AssetsGrid.jsx');
 var consts = require('../consts.js');
 var Status = require('./Status.jsx');
@@ -8,7 +7,6 @@ var Status = require('./Status.jsx');
 var SendAsset = React.createClass({
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
-        GeneralActions.changeView(consts.initialView);
     },
     onChange: function(state) {
         this.setState(state);
@@ -33,7 +31,6 @@ var SendAsset = React.createClass({
 		
 		e.preventDefault();
 		//Display the status (sent successfully/failed) with details that will be updated in the sendAsset callback
-		//GeneralActions.changeView(consts.statusView);
 		ColuActions.sendAsset(assetInfo);
 	},
 	render: function () {

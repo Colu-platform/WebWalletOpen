@@ -1,8 +1,6 @@
 var IssueAsset = require('./IssueAsset.jsx');
 var AssetsGrid = require('./AssetsGrid.jsx');
 var Nav = require('./Nav.jsx');
-var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
 var SendAsset = require('./SendAsset.jsx');
 var consts = require('../consts.js');
 

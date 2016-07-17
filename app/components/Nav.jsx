@@ -1,7 +1,4 @@
 var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
-var consts = require('../consts.js');
-
 
 import { Link } from 'react-router'
 
