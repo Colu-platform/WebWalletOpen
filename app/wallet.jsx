@@ -27,35 +27,29 @@ var Wallet = React.createClass({
 	},
 	componentDidMount: function() {
 		//subscribe to the store
-        WalletStore.listen(this.onChange);
-    },
-    onChange: function(state) {
-    	//Update this component's state with what's in the WalletSore
-        this.setState(state);
-    },
-    componentWillUnmount: function() {
-    	//Stop updating component's state once it's not active
-        WalletStore.unlisten(this.onChange);
-    },
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function(state) {
+		//Update this component's state with what's in the WalletSore
+		this.setState(state);
+	},
+	componentWillUnmount: function() {
+		//Stop updating component's state once it's not active
+		WalletStore.unlisten(this.onChange);
+	},
 	render: function() {
-		var invisible = {
-                display: 'none'
-            };
-
-	    return (
-	    	<div>
-	            <div className="enter-private-seed">
-				    <EnterPrivateSeed />
-			    </div>
-			    <div className="wallet-main" style={invisible} >
-			        <div className="private-seed">{this.state.privateSeed}</div>
-			        <WalletRouter />
-			        
-			    </div>
-			</div>
-	    );
+		return (
+			<div>
+						<div className="enter-private-seed">
+					<EnterPrivateSeed />
+				</div>
+				<div className="wallet-main" style={{display: 'none'}}>
+						<div className="private-seed">{this.state.privateSeed}</div>
+						<WalletRouter />
+				</div>
+		</div>
+		);
 	}
 });
 
 ReactDOM.render(<Wallet />, document.getElementById('display'));
-
