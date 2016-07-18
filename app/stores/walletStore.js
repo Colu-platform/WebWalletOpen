@@ -11,8 +11,10 @@ function WalletStore() {
 
 
 //Colu
-WalletStore.prototype.onColuInitSuccess = function(privateSeed) {
-  this.privateSeed = privateSeed;
+WalletStore.prototype.onColuInitSuccess = function(obj) {
+  this.privateSeed = obj.privateSeed;
+  this.assets = obj.assets;
+  localStorage.setItem( 'privateSeed', obj.privateSeed );
 }
 
 WalletStore.prototype.onGetAssetsSuccess = function(obj) {

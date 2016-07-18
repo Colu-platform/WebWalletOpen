@@ -35,6 +35,27 @@ function removeDuplicates(arr, prop) {
 }
 
 //---------------------- COLU FUNCTIONS --------------------//
+
+
+//Get all the assets a private seed has in his wallet
+function getAssets(callback) {
+  var that = this,
+      assets = [];
+  ColuActions.colu.getAssets(function (err, body) {
+    if (err) {
+      return callback(err);
+    }
+
+    assets = body;
+
+    //insert the header into the assets array
+    assets.unshift({address:'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT'});
+
+    callback(null, assets);
+  });
+}
+
+
 //Initialize Colu sdk
 ColuActions.prototype.coluInit = function(privateSeed) {
   var settings = {
@@ -43,34 +64,32 @@ ColuActions.prototype.coluInit = function(privateSeed) {
     },
     address,
     that = this;
-
   try {
     ColuActions.colu = new Colu(settings);
-   
+
     ColuActions.colu.on('connect', function () {
-
-      //to reset the state every time a new wallet is rendered
-      alt.recycle();
-
-      //If no private key is entered, get a new private key
+      //If no private key is entered, the wallet initialized using a random private key, we retrieve it
       if (!privateSeed) {
         privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
         //get an address to be able to do transactions
         address = ColuActions.colu.hdwallet.getAddress();
-      } 
-      
-      //If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
-      that.actions.coluInitSuccess(privateSeed);
+      }
 
-      //when we start wallet-content is invisible, show it once we initialized the wallet
-      $(".wallet-main").css("display", "block");
+      getAssets(function callback(err, assets) {
+        if (err) {
+            return that.actions.actionFailed(err);
+        }
+        //If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
+        that.actions.coluInitSuccess({privateSeed: privateSeed, assets: assets});
+      });
     });
 
     ColuActions.colu.init();
+
   } catch (e) {
     that.actions.actionFailed(e);
   }
-}
+};
 
 //Issue a new asset
 ColuActions.prototype.issueAsset = function(asset) {
@@ -143,27 +162,6 @@ ColuActions.prototype.getAssetInfo = function(assets, chosenAssetId) {
     chosenAssetId: chosenAssetId,
     addresses: addressesArr,
     assetAmount: assetAmount + ' AVAILABLE'//update the amount for the chosen asset
-  });
-};
-
-
-//Get all the assets a private seed has in his wallet
-ColuActions.prototype.getAssets = function() {
-  var that = this,
-      assets = [];
-  ColuActions.colu.getAssets(function (err, body) {
-    if (err) {
-      return that.actions.actionFailed(err);
-    }
-
-    assets = body;
-
-    //insert the header into the assets array
-    assets.unshift({address:'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT'});
-
-    that.actions.getAssetsSuccess({
-      assets: assets
-    }); 
   });
 };
 

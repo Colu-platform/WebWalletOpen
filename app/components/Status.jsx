@@ -2,9 +2,11 @@ var WalletStore = require('../stores/WalletStore');
 var GeneralActions = require('../actions/GeneralActions');
 
 var Status = React.createClass({
+    getInitialState: function() {
+        return WalletStore.getState();
+    },
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
-        GeneralActions.resetStatus();
     },
     onChange: function(state) {
         this.setState(state);

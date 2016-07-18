@@ -1,8 +1,12 @@
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
+var GeneralActions = require('../actions/GeneralActions');
 var Status = require('./Status.jsx');
 
 var IssueAsset = React.createClass({
+	getInitialState: function() {
+        return WalletStore.getState();
+    },
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
     },
@@ -11,21 +15,22 @@ var IssueAsset = React.createClass({
     },
     componentWillUnmount: function() {
         WalletStore.unlisten(this.onChange);
+        GeneralActions.resetStatus();
     },
 	handleSubmit: function (e) {
         var asset = {
-            amount: this.refs.amount && this.refs.amount.value,
-            divisibility: this.refs.divisibility && this.refs.divisibility.value,
-            reissueable: false,
-            transfer: [{
-                amount: this.refs.amount && this.refs.amount.value
-            }],
-            metadata: {
-                'assetName': this.refs.assetName && this.refs.assetName.value,
-                'issuer': 'Colu Demo Wallet',
-                'urls': [{name:'icon', url: this.refs.iconUrl && this.refs.iconUrl.value, mimeType: 'image/png', dataHash: ''}]
-            }
-        };
+                amount: this.refs.amount && this.refs.amount.value,
+                divisibility: this.refs.divisibility && this.refs.divisibility.value,
+                reissueable: false,
+                transfer: [{
+                    amount: this.refs.amount && this.refs.amount.value
+                }],
+                metadata: {
+                    'assetName': this.refs.assetName && this.refs.assetName.value,
+                    'issuer': 'Colu Demo Wallet',
+                    'urls': [{name:'icon', url: this.refs.iconUrl && this.refs.iconUrl.value, mimeType: 'image/png', dataHash: ''}]
+                }
+            };
 
 		e.preventDefault();
 		//Display the status (issued successfully/failed) with details that will be updated in the issueAsset callback

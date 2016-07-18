@@ -9,8 +9,7 @@ function GeneralActions() {
 
 //change the view inside the wallet
 GeneralActions.prototype.resetStatus = function() {
-  var that = this;
-  that.actions.resetStatus(); 
+  this.actions.resetStatus(); 
 };
 
 module.exports = alt.createActions(GeneralActions);

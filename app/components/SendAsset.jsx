@@ -3,8 +3,12 @@ var ColuActions = require('../actions/ColuActions');
 var AssetsGrid = require('./AssetsGrid.jsx');
 var consts = require('../consts.js');
 var Status = require('./Status.jsx');
+var GeneralActions = require('../actions/GeneralActions');
 
 var SendAsset = React.createClass({
+	getInitialState: function() {
+        return WalletStore.getState();
+    },
 	componentDidMount: function() {
         WalletStore.listen(this.onChange);
     },
@@ -13,6 +17,7 @@ var SendAsset = React.createClass({
     },
     componentWillUnmount: function() {
         WalletStore.unlisten(this.onChange);
+        GeneralActions.resetStatus();
     },
 	handleSubmit: function (e) {
 		var assetInfo = {

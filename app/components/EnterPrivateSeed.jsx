@@ -15,20 +15,21 @@ var EnterPrivateSeed = React.createClass({
 		var privateSeed = this.refs.privateSeed.value;
 
 		e.preventDefault();
-		//Initialize Colu once per every private seed entered
+		//Initialize Colu with given private seed
+		//if none is entered, colu sdk will generate a random one on initialization
 		ColuActions.coluInit(privateSeed);
 	},
 	render: function () {
 		//Build the Enter Private Seed form
 		return (
-		    <form className="enter-privateseed-form" onSubmit={this.handleSubmit}>
+		    <form className="enter-privateseed-form">
 		        <div className = "group privateseed">
 		            <div className="privateseed-input">
 		            	<input name="privateSeed" ref="privateSeed" />
 		            	<span className="bar"></span>
 		            	<label className="enter">Private Seed</label>
 		            </div>
-		        	<button className="btn" type="submit" ref="submitButton">VIEW WALLET</button>
+		        	<button className="btn" type="submit" ref="submitButton" onClick={this.handleSubmit}>VIEW WALLET</button>
 		        </div>
 		    </form>
 		);
