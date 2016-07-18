@@ -28,11 +28,11 @@ var Wallet = React.createClass({
 	componentWillMount: function() {
 		var currentPrivateSeed = localStorage.getItem('privateSeed');
 
-        //Initialize Colu, remember while this action is running you cannot dispatch another action (this will produce an error)
-        if (currentPrivateSeed) {
-            ColuActions.coluInit(currentPrivateSeed);
-        }
-    },
+		//Initialize Colu, remember while this action is running you cannot dispatch another action (this will produce an error)
+		if (currentPrivateSeed) {
+			ColuActions.coluInit(currentPrivateSeed);
+		}
+	},
 	componentDidMount: function() {
 		//subscribe to the store
 		WalletStore.listen(this.onChange);
@@ -44,35 +44,33 @@ var Wallet = React.createClass({
 	componentWillUnmount: function() {
 		//Stop updating component's state once it's not active
 		WalletStore.unlisten(this.onChange);
-		
 	},
 	render: function() {
-	    var hasWallet = localStorage.getItem('privateSeed');
+		var hasWallet = localStorage.getItem('privateSeed');
 		
 		if (this.state.privateSeed) {//Returning user (because initialized with currentPrivateSeed): When colu is ready return the wallet content
-		    return (
-		    	<div>
-		    		<EnterPrivateSeed />
-		    		<div className="wallet-main" >
-		    			<div className="private-seed">{this.state.privateSeed}</div>
-		    			<WalletRouter />
-		    		</div>
-		    	</div>
-		    );
+			return (
+				<div>
+					<EnterPrivateSeed />
+					<div className="wallet-main" >
+						<div className="private-seed">{this.state.privateSeed}</div>
+						<WalletRouter />
+					</div>
+				</div>
+			);
 		} else if (hasWallet) {//Returning user but colu is not ready yet, display loading
 			return (
 				<div>
-		    		<EnterPrivateSeed />
+					<EnterPrivateSeed />
 				'loading...'
 				</div>
 			);
 		} else {//New user: display the enter private seed form only
-            return(
-		    	<EnterPrivateSeed />
-		    );
+			return(
+				<EnterPrivateSeed />
+			);
 		}
 	}
 });
 
 ReactDOM.render(<Wallet />, document.getElementById('display'));
-
