@@ -4,49 +4,49 @@ var GeneralActions = require('../actions/GeneralActions');
 var consts = require('../consts.js');
 
 function WalletStore() {
-  //Update the store with what is passed from the actions
-  this.bindActions(ColuActions);
-  this.bindActions(GeneralActions);
+	//Update the store with what is passed from the actions
+	this.bindActions(ColuActions);
+	this.bindActions(GeneralActions);
 }
 
 
 //Colu
 WalletStore.prototype.onColuInitSuccess = function(obj) {
-  this.privateSeed = obj.privateSeed;
-  this.assets = obj.assets;
-  localStorage.setItem( 'privateSeed', obj.privateSeed );
+	this.privateSeed = obj.privateSeed;
+	this.assets = obj.assets;
+	localStorage.setItem( 'privateSeed', obj.privateSeed );
 }
 
 WalletStore.prototype.onGetAssetsSuccess = function(obj) {
-  this.assets = obj.assets;
+	this.assets = obj.assets;
 }
 
 WalletStore.prototype.getAssetInfoSuccess = function(obj) {
-  this.addresses = obj.addresses;
-  this.chosenAssetId = obj.chosenAssetId;
-  this.assetAmount = obj.assetAmount;
+	this.addresses = obj.addresses;
+	this.chosenAssetId = obj.chosenAssetId;
+	this.assetAmount = obj.assetAmount;
 }
 
 
 //Status messages
 WalletStore.prototype.resetStatus = function() {
-  this.updatedStatus = null;
-  this.error = null;
+	this.updatedStatus = null;
+	this.error = null;
 }
 
 WalletStore.prototype.onActionFailed = function(err) {
-  this.error = 'There was an error: ' + JSON.stringify(err);
-  this.updatedStatus = null;
+	this.error = 'There was an error: ' + JSON.stringify(err);
+	this.updatedStatus = null;
 }
 
 WalletStore.prototype.onIssueAssetSuccess = function(asset) {
-  this.updatedStatus = 'Issued Asset successfully. Asset Id: ' + (asset && asset.assetId);
-  this.error = null;
+	this.updatedStatus = 'Issued Asset successfully. Asset Id: ' + (asset && asset.assetId);
+	this.error = null;
 }
 
 WalletStore.prototype.onSendAssetSuccess = function(sentAsset) {
-  this.updatedStatus = 'Sent Asset successfully. Transaction Id: ' + (sentAsset && sentAsset.txid);
-  this.error = null;
+	this.updatedStatus = 'Sent Asset successfully. Transaction Id: ' + (sentAsset && sentAsset.txid);
+	this.error = null;
 }
 
 module.exports = alt.createStore(WalletStore);

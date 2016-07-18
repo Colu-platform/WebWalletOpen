@@ -1,5 +1,5 @@
 var consts = {
-    initialView: '',
+	initialView: '',
 	assetRenderStyle: {
 		grid: 1,
 		list: 2

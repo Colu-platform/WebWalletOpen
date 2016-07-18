@@ -6,152 +6,151 @@ var consts = require('../consts.js');
 var Colu = require('colu');
 
 function ColuActions() {
-  this.generateActions('coluInitSuccess', 'actionFailed', 'sendAssetSuccess', 'getAssetsSuccess', 'displaySendAssetSuccess', 'issueAssetSuccess', 'getAddressInfoSuccess', 'getAssetInfoSuccess');
+	this.generateActions('coluInitSuccess', 'actionFailed', 'sendAssetSuccess', 'getAssetsSuccess', 'displaySendAssetSuccess', 'issueAssetSuccess', 'getAddressInfoSuccess', 'getAssetInfoSuccess');
 }
 
 //---------------------- UTIL FUNCTIONS --------------------//
 
 //Removes duplicate objects by a given property from an array of objects
 function removeDuplicates(arr, prop) {
-  var new_arr = [];
-  var lookup = {};
+	var new_arr = [];
+	var lookup = {};
 
-  for (var i in arr) {
-    lookup[arr[i][prop]] = arr[i];
-  }
+	for (var i in arr) {
+		lookup[arr[i][prop]] = arr[i];
+	}
 
-  for (i in lookup) {
-    new_arr.push(lookup[i]);
-  }
-
-  return new_arr;
+	for (i in lookup) {
+		new_arr.push(lookup[i]);
+	}
+	return new_arr;
 }
 
 //---------------------- COLU FUNCTIONS --------------------//
 
 //Get all the assets a private seed has in his wallet
 function getAssets(callback) {
-  var that = this,
-      assets = [];
-  ColuActions.colu.getAssets(function (err, body) {
-    if (err) {
-      return callback(err);
-    }
+	var that = this,
+	    assets = [];
+	ColuActions.colu.getAssets(function (err, body) {
+		if (err) {
+			return callback(err);
+		}
 
-    assets = body;
+		assets = body;
 
-    //insert the header into the assets array
-    assets.unshift({ address: 'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT' });
+		//insert the header into the assets array
+		assets.unshift({ address: 'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT' });
 
-    callback(null, assets);
-  });
+		callback(null, assets);
+	});
 }
 
 //Initialize Colu sdk
 ColuActions.prototype.coluInit = function (privateSeed) {
-  var settings = {
-    network: 'testnet',
-    privateSeed: privateSeed
-  },
-      address,
-      that = this;
-  try {
-    ColuActions.colu = new Colu(settings);
+	var settings = {
+		network: 'testnet',
+		privateSeed: privateSeed
+	},
+	    address,
+	    that = this;
+	try {
+		ColuActions.colu = new Colu(settings);
 
-    ColuActions.colu.on('connect', function () {
-      //If no private key is entered, the wallet initialized using a random private key, we retrieve it
-      if (!privateSeed) {
-        privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
-        //get an address to be able to do transactions
-        address = ColuActions.colu.hdwallet.getAddress();
-      }
+		ColuActions.colu.on('connect', function () {
+			//If no private key is entered, the wallet initialized using a random private key, we retrieve it
+			if (!privateSeed) {
+				privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
+				//get an address to be able to do transactions
+				address = ColuActions.colu.hdwallet.getAddress();
+			}
 
-      getAssets(function callback(err, assets) {
-        if (err) {
-          return that.actions.actionFailed(err);
-        }
-        //If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
-        that.actions.coluInitSuccess({ privateSeed: privateSeed, assets: assets });
-      });
-    });
+			getAssets(function callback(err, assets) {
+				if (err) {
+					return that.actions.actionFailed(err);
+				}
+				//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
+				that.actions.coluInitSuccess({ privateSeed: privateSeed, assets: assets });
+			});
+		});
 
-    ColuActions.colu.init();
-  } catch (e) {
-    that.actions.actionFailed(e);
-  }
+		ColuActions.colu.init();
+	} catch (e) {
+		that.actions.actionFailed(e);
+	}
 };
 
 //Issue a new asset
 ColuActions.prototype.issueAsset = function (asset) {
-  var that = this;
+	var that = this;
 
-  ColuActions.colu.issueAsset(asset, function (err, body) {
-    if (err) {
-      return that.actions.actionFailed(err);
-    }
-    that.actions.issueAssetSuccess(body);
-  });
+	ColuActions.colu.issueAsset(asset, function (err, body) {
+		if (err) {
+			return that.actions.actionFailed(err);
+		}
+		that.actions.issueAssetSuccess(body);
+	});
 };
 
 //Send and asset to an address or phone number
 ColuActions.prototype.sendAsset = function (assetInfo) {
-  var that = this,
-      asset = {
-    from: assetInfo.from, //all the addresses for this asset
-    to: [{
-      address: assetInfo.toAddress,
-      phoneNumber: assetInfo.toPhoneNumber,
-      assetId: assetInfo.assetId,
-      amount: assetInfo.amount
-    }]
-  };
-  ColuActions.colu.sendAsset(asset, function (err, body) {
-    if (err) {
-      return that.actions.actionFailed(err);
-    }
-    that.actions.sendAssetSuccess(body);
-  });
+	var that = this,
+	    asset = {
+		from: assetInfo.from, //all the addresses for this asset
+		to: [{
+			address: assetInfo.toAddress,
+			phoneNumber: assetInfo.toPhoneNumber,
+			assetId: assetInfo.assetId,
+			amount: assetInfo.amount
+		}]
+	};
+	ColuActions.colu.sendAsset(asset, function (err, body) {
+		if (err) {
+			return that.actions.actionFailed(err);
+		}
+		that.actions.sendAssetSuccess(body);
+	});
 };
 
 //Get info for the individual asset
 ColuActions.prototype.getAssetInfo = function (assets, chosenAssetId) {
-  var that = this;
-  var assetsIds = {};
-  var noDupArr = removeDuplicates(assets, 'assetId');
-  var addresses = [];
-  var addressesArr = [];
-  var assetAmount = 0;
+	var that = this;
+	var assetsIds = {};
+	var noDupArr = removeDuplicates(assets, 'assetId');
+	var addresses = [];
+	var addressesArr = [];
+	var assetAmount = 0;
 
-  //Build and object where every key is Assed Id, and the value is an array of objects,
-  //each containing and address for that specific asset and the amount of asset on that address
-  for (var i in noDupArr) {
-    assetsIds[noDupArr[i].assetId] = assets.map(function (asset) {
-      if (asset.assetId === noDupArr[i].assetId) {
-        return {
-          address: asset.address,
-          amount: asset.amount
-        };
-      }
-      return;
-    }).filter(function (assetId) {
-      return assetId;
-    });
-  }
+	//Build and object where every key is Assed Id, and the value is an array of objects,
+	//each containing and address for that specific asset and the amount of asset on that address
+	for (var i in noDupArr) {
+		assetsIds[noDupArr[i].assetId] = assets.map(function (asset) {
+			if (asset.assetId === noDupArr[i].assetId) {
+				return {
+					address: asset.address,
+					amount: asset.amount
+				};
+			}
+			return;
+		}).filter(function (assetId) {
+			return assetId;
+		});
+	}
 
-  //get just the array of objects for the specific asset
-  addresses = assetsIds[chosenAssetId];
+	//get just the array of objects for the specific asset
+	addresses = assetsIds[chosenAssetId];
 
-  //calculate total amount of the asset on all the addresses, and build an array of just addresses
-  for (var i in addresses) {
-    assetAmount += addresses[i].amount;
-    addressesArr.push(addresses[i].address);
-  }
+	//calculate total amount of the asset on all the addresses, and build an array of just addresses
+	for (var i in addresses) {
+		assetAmount += addresses[i].amount;
+		addressesArr.push(addresses[i].address);
+	}
 
-  that.actions.getAssetInfoSuccess({
-    chosenAssetId: chosenAssetId,
-    addresses: addressesArr,
-    assetAmount: assetAmount + ' AVAILABLE' //update the amount for the chosen asset
-  });
+	that.actions.getAssetInfoSuccess({
+		chosenAssetId: chosenAssetId,
+		addresses: addressesArr,
+		assetAmount: assetAmount + ' AVAILABLE' //update the amount for the chosen asset
+	});
 };
 
 module.exports = alt.createActions(ColuActions);
@@ -163,12 +162,12 @@ var alt = require('../alt.js');
 var consts = require('../consts.js');
 
 function GeneralActions() {
-  this.generateActions('resetStatus');
+	this.generateActions('resetStatus');
 }
 
 //change the view inside the wallet
 GeneralActions.prototype.resetStatus = function () {
-  this.actions.resetStatus();
+	this.actions.resetStatus();
 };
 
 module.exports = alt.createActions(GeneralActions);
@@ -188,49 +187,49 @@ var ColuActions = require('../actions/ColuActions');
 var consts = require('../consts.js');
 
 var Asset = React.createClass({
-    displayName: 'Asset',
+	displayName: 'Asset',
 
-    componentDidMount: function componentDidMount() {
-        WalletStore.listen(this.onChange);
-    },
-    onChange: function onChange(state) {
-        this.setState(state);
-    },
-    componentWillUnmount: function componentWillUnmount() {
-        WalletStore.unlisten(this.onChange);
-    },
-    render: function render() {
-        //Build individual asset in the asset list according to render style that is passed from the Asset List component
-        //TableView: where each asset is a row and asset properties are cells
-        //Select: where each asset is option that contains asset id
-        if (this.props.renderStyle === consts.assetRenderStyle.grid) {
-            return React.createElement(
-                'div',
-                { className: 'row' },
-                React.createElement(
-                    'div',
-                    { className: 'cell address-cell' },
-                    this.props.asset.address
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'cell assetid-cell' },
-                    this.props.asset.assetId
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'cell amount-cell' },
-                    this.props.asset.amount
-                )
-            );
-        } else if (this.props.renderStyle === consts.assetRenderStyle.list) {
-            return React.createElement(
-                'option',
-                null,
-                this.props.asset.assetId
-            );
-        }
-    }
+	componentDidMount: function componentDidMount() {
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function onChange(state) {
+		this.setState(state);
+	},
+	componentWillUnmount: function componentWillUnmount() {
+		WalletStore.unlisten(this.onChange);
+	},
+	render: function render() {
+		//Build individual asset in the asset list according to render style that is passed from the Asset List component
+		//TableView: where each asset is a row and asset properties are cells
+		//Select: where each asset is option that contains asset id
+		if (this.props.renderStyle === consts.assetRenderStyle.grid) {
+			return React.createElement(
+				'div',
+				{ className: 'row' },
+				React.createElement(
+					'div',
+					{ className: 'cell address-cell' },
+					this.props.asset.address
+				),
+				React.createElement(
+					'div',
+					{ className: 'cell assetid-cell' },
+					this.props.asset.assetId
+				),
+				React.createElement(
+					'div',
+					{ className: 'cell amount-cell' },
+					this.props.asset.amount
+				)
+			);
+		} else if (this.props.renderStyle === consts.assetRenderStyle.list) {
+			return React.createElement(
+				'option',
+				null,
+				this.props.asset.assetId
+			);
+		}
+	}
 });
 
 module.exports = Asset;
@@ -356,107 +355,109 @@ module.exports = EnterPrivateSeed;
 },{"../actions/ColuActions":1,"../stores/WalletStore":13}],7:[function(require,module,exports){
 'use strict';
 
-var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
-var GeneralActions = require('../actions/GeneralActions');
 var Status = require('./Status.jsx');
 
+var ColuActions = require('../actions/ColuActions');
+var GeneralActions = require('../actions/GeneralActions');
+
+var WalletStore = require('../stores/WalletStore');
+
 var IssueAsset = React.createClass({
-				displayName: 'IssueAsset',
+	displayName: 'IssueAsset',
 
-				getInitialState: function getInitialState() {
-								return WalletStore.getState();
-				},
-				componentDidMount: function componentDidMount() {
-								WalletStore.listen(this.onChange);
-				},
-				onChange: function onChange(state) {
-								this.setState(state);
-				},
-				componentWillUnmount: function componentWillUnmount() {
-								WalletStore.unlisten(this.onChange);
-								GeneralActions.resetStatus();
-				},
-				handleSubmit: function handleSubmit(e) {
-								var asset = {
-												amount: this.refs.amount && this.refs.amount.value,
-												divisibility: this.refs.divisibility && this.refs.divisibility.value,
-												reissueable: false,
-												transfer: [{
-																amount: this.refs.amount && this.refs.amount.value
-												}],
-												metadata: {
-																'assetName': this.refs.assetName && this.refs.assetName.value,
-																'issuer': 'Colu Demo Wallet',
-																'urls': [{ name: 'icon', url: this.refs.iconUrl && this.refs.iconUrl.value, mimeType: 'image/png', dataHash: '' }]
-												}
-								};
+	getInitialState: function getInitialState() {
+		return WalletStore.getState();
+	},
+	componentDidMount: function componentDidMount() {
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function onChange(state) {
+		this.setState(state);
+	},
+	componentWillUnmount: function componentWillUnmount() {
+		WalletStore.unlisten(this.onChange);
+		GeneralActions.resetStatus();
+	},
+	handleSubmit: function handleSubmit(e) {
+		var asset = {
+			amount: this.refs.amount && this.refs.amount.value,
+			divisibility: this.refs.divisibility && this.refs.divisibility.value,
+			reissueable: false,
+			transfer: [{
+				amount: this.refs.amount && this.refs.amount.value
+			}],
+			metadata: {
+				'assetName': this.refs.assetName && this.refs.assetName.value,
+				'issuer': 'Colu Demo Wallet',
+				'urls': [{ name: 'icon', url: this.refs.iconUrl && this.refs.iconUrl.value, mimeType: 'image/png', dataHash: '' }]
+			}
+		};
 
-								e.preventDefault();
-								//Display the status (issued successfully/failed) with details that will be updated in the issueAsset callback
-								ColuActions.issueAsset(asset);
-				},
-				render: function render() {
-								//Build the Issue Asset Form
-								return React.createElement(
-												'div',
-												{ className: 'view-content' },
-												React.createElement(
-																'form',
-																{ className: 'issue-asset-form', onSubmit: this.handleSubmit },
-																React.createElement(
-																				'div',
-																				{ className: 'group' },
-																				React.createElement('input', { ref: 'assetName' }),
-																				React.createElement('span', { className: 'bar' }),
-																				React.createElement(
-																								'label',
-																								null,
-																								'ASSET NAME'
-																				)
-																),
-																React.createElement(
-																				'div',
-																				{ className: 'group' },
-																				React.createElement('input', { ref: 'iconUrl' }),
-																				React.createElement('span', { className: 'bar' }),
-																				React.createElement(
-																								'label',
-																								null,
-																								'COIN ICON URL'
-																				)
-																),
-																React.createElement(
-																				'div',
-																				{ className: 'group' },
-																				React.createElement('input', { ref: 'amount' }),
-																				React.createElement('span', { className: 'bar' }),
-																				React.createElement(
-																								'label',
-																								null,
-																								'AMOUNT'
-																				)
-																),
-																React.createElement(
-																				'div',
-																				{ className: 'group' },
-																				React.createElement('input', { ref: 'divisibility' }),
-																				React.createElement('span', { className: 'bar' }),
-																				React.createElement(
-																								'label',
-																								null,
-																								'DIVISIBILITY'
-																				)
-																),
-																React.createElement(
-																				'button',
-																				{ className: 'btn', type: 'submit' },
-																				'SEND'
-																)
-												),
-												React.createElement(Status, null)
-								);
-				}
+		e.preventDefault();
+		//Display the status (issued successfully/failed) with details that will be updated in the issueAsset callback
+		ColuActions.issueAsset(asset);
+	},
+	render: function render() {
+		//Build the Issue Asset Form
+		return React.createElement(
+			'div',
+			{ className: 'view-content' },
+			React.createElement(
+				'form',
+				{ className: 'issue-asset-form', onSubmit: this.handleSubmit },
+				React.createElement(
+					'div',
+					{ className: 'group' },
+					React.createElement('input', { ref: 'assetName' }),
+					React.createElement('span', { className: 'bar' }),
+					React.createElement(
+						'label',
+						null,
+						'ASSET NAME'
+					)
+				),
+				React.createElement(
+					'div',
+					{ className: 'group' },
+					React.createElement('input', { ref: 'iconUrl' }),
+					React.createElement('span', { className: 'bar' }),
+					React.createElement(
+						'label',
+						null,
+						'COIN ICON URL'
+					)
+				),
+				React.createElement(
+					'div',
+					{ className: 'group' },
+					React.createElement('input', { ref: 'amount' }),
+					React.createElement('span', { className: 'bar' }),
+					React.createElement(
+						'label',
+						null,
+						'AMOUNT'
+					)
+				),
+				React.createElement(
+					'div',
+					{ className: 'group' },
+					React.createElement('input', { ref: 'divisibility' }),
+					React.createElement('span', { className: 'bar' }),
+					React.createElement(
+						'label',
+						null,
+						'DIVISIBILITY'
+					)
+				),
+				React.createElement(
+					'button',
+					{ className: 'btn', type: 'submit' },
+					'SEND'
+				)
+			),
+			React.createElement(Status, null)
+		);
+	}
 });
 
 module.exports = IssueAsset;
@@ -469,38 +470,38 @@ var _reactRouter = require('react-router');
 var WalletStore = require('../stores/WalletStore');
 
 var Nav = React.createClass({
-    displayName: 'Nav',
+	displayName: 'Nav',
 
-    componentDidMount: function componentDidMount() {
-        WalletStore.listen(this.onChange);
-    },
-    onChange: function onChange(state) {
-        this.setState(state);
-    },
-    componentWillUnmount: function componentWillUnmount() {
-        WalletStore.unlisten(this.onChange);
-    },
-    render: function render() {
-        return React.createElement(
-            'div',
-            { className: 'wallet-nav' },
-            React.createElement(
-                _reactRouter.Link,
-                { className: 'btn nav-btn', to: '/issue' },
-                'ISSUE'
-            ),
-            React.createElement(
-                _reactRouter.Link,
-                { className: 'btn nav-btn', to: '/assets' },
-                'VIEW ASSETS'
-            ),
-            React.createElement(
-                _reactRouter.Link,
-                { className: 'btn nav-btn', to: '/sendAsset' },
-                'SEND AN ASSET'
-            )
-        );
-    }
+	componentDidMount: function componentDidMount() {
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function onChange(state) {
+		this.setState(state);
+	},
+	componentWillUnmount: function componentWillUnmount() {
+		WalletStore.unlisten(this.onChange);
+	},
+	render: function render() {
+		return React.createElement(
+			'div',
+			{ className: 'wallet-nav' },
+			React.createElement(
+				_reactRouter.Link,
+				{ className: 'btn nav-btn', to: '/issue' },
+				'ISSUE'
+			),
+			React.createElement(
+				_reactRouter.Link,
+				{ className: 'btn nav-btn', to: '/assets' },
+				'VIEW ASSETS'
+			),
+			React.createElement(
+				_reactRouter.Link,
+				{ className: 'btn nav-btn', to: '/sendAsset' },
+				'SEND AN ASSET'
+			)
+		);
+	}
 });
 
 module.exports = Nav;
@@ -508,12 +509,14 @@ module.exports = Nav;
 },{"../stores/WalletStore":13,"react-router":371}],9:[function(require,module,exports){
 'use strict';
 
-var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
 var AssetsGrid = require('./AssetsGrid.jsx');
-var consts = require('../consts.js');
 var Status = require('./Status.jsx');
+var consts = require('../consts.js');
+
+var ColuActions = require('../actions/ColuActions');
 var GeneralActions = require('../actions/GeneralActions');
+
+var WalletStore = require('../stores/WalletStore');
 
 var SendAsset = React.createClass({
 	displayName: 'SendAsset',
@@ -623,37 +626,37 @@ var WalletStore = require('../stores/WalletStore');
 var GeneralActions = require('../actions/GeneralActions');
 
 var Status = React.createClass({
-    displayName: 'Status',
+	displayName: 'Status',
 
-    getInitialState: function getInitialState() {
-        return WalletStore.getState();
-    },
-    componentDidMount: function componentDidMount() {
-        WalletStore.listen(this.onChange);
-    },
-    onChange: function onChange(state) {
-        this.setState(state);
-    },
-    componentWillUnmount: function componentWillUnmount() {
-        WalletStore.unlisten(this.onChange);
-    },
-    render: function render() {
-        if (this.state && this.state.updatedStatus) {
-            return React.createElement(
-                'div',
-                { className: 'status ok' },
-                this.state && this.state.updatedStatus
-            );
-        } else if (this.state && this.state.error) {
-            return React.createElement(
-                'div',
-                { className: 'status error' },
-                this.state && this.state.error
-            );
-        } else {
-            return React.createElement('div', { className: 'status' });
-        }
-    }
+	getInitialState: function getInitialState() {
+		return WalletStore.getState();
+	},
+	componentDidMount: function componentDidMount() {
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function onChange(state) {
+		this.setState(state);
+	},
+	componentWillUnmount: function componentWillUnmount() {
+		WalletStore.unlisten(this.onChange);
+	},
+	render: function render() {
+		if (this.state && this.state.updatedStatus) {
+			return React.createElement(
+				'div',
+				{ className: 'status ok' },
+				this.state && this.state.updatedStatus
+			);
+		} else if (this.state && this.state.error) {
+			return React.createElement(
+				'div',
+				{ className: 'status error' },
+				this.state && this.state.error
+			);
+		} else {
+			return React.createElement('div', { className: 'status' });
+		}
+	}
 });
 
 module.exports = Status;
@@ -677,39 +680,40 @@ var IssueAsset = require('./IssueAsset.jsx');
 var AssetsGrid = require('./AssetsGrid.jsx');
 var Nav = require('./Nav.jsx');
 var SendAsset = require('./SendAsset.jsx');
+
 var consts = require('../consts.js');
 
 var history = (0, _createBrowserHistory2.default)();
 
 var Container = _react2.default.createClass({
-    displayName: 'Container',
+	displayName: 'Container',
 
-    render: function render() {
-        return _react2.default.createElement(
-            'div',
-            { className: 'wallet-content' },
-            _react2.default.createElement(Nav, null),
-            this.props.children
-        );
-    }
+	render: function render() {
+		return _react2.default.createElement(
+			'div',
+			{ className: 'wallet-content' },
+			_react2.default.createElement(Nav, null),
+			this.props.children
+		);
+	}
 });
 
 var WalletRouter = _react2.default.createClass({
-    displayName: 'WalletRouter',
+	displayName: 'WalletRouter',
 
-    render: function render() {
-        return _react2.default.createElement(
-            _reactRouter.Router,
-            null,
-            _react2.default.createElement(
-                _reactRouter.Route,
-                { path: '/', history: history, component: Container },
-                _react2.default.createElement(_reactRouter.Route, { path: '/issue', component: IssueAsset }),
-                _react2.default.createElement(_reactRouter.Route, { path: '/assets', component: AssetsGrid, renderStyle: consts.assetRenderStyle.grid }),
-                _react2.default.createElement(_reactRouter.Route, { path: '/sendAsset', component: SendAsset })
-            )
-        );
-    }
+	render: function render() {
+		return _react2.default.createElement(
+			_reactRouter.Router,
+			null,
+			_react2.default.createElement(
+				_reactRouter.Route,
+				{ path: '/', history: history, component: Container },
+				_react2.default.createElement(_reactRouter.Route, { path: '/issue', component: IssueAsset }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/assets', component: AssetsGrid, renderStyle: consts.assetRenderStyle.grid }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/sendAsset', component: SendAsset })
+			)
+		);
+	}
 });
 
 module.exports = WalletRouter;
@@ -737,47 +741,47 @@ var GeneralActions = require('../actions/GeneralActions');
 var consts = require('../consts.js');
 
 function WalletStore() {
-  //Update the store with what is passed from the actions
-  this.bindActions(ColuActions);
-  this.bindActions(GeneralActions);
+	//Update the store with what is passed from the actions
+	this.bindActions(ColuActions);
+	this.bindActions(GeneralActions);
 }
 
 //Colu
 WalletStore.prototype.onColuInitSuccess = function (obj) {
-  this.privateSeed = obj.privateSeed;
-  this.assets = obj.assets;
-  localStorage.setItem('privateSeed', obj.privateSeed);
+	this.privateSeed = obj.privateSeed;
+	this.assets = obj.assets;
+	localStorage.setItem('privateSeed', obj.privateSeed);
 };
 
 WalletStore.prototype.onGetAssetsSuccess = function (obj) {
-  this.assets = obj.assets;
+	this.assets = obj.assets;
 };
 
 WalletStore.prototype.getAssetInfoSuccess = function (obj) {
-  this.addresses = obj.addresses;
-  this.chosenAssetId = obj.chosenAssetId;
-  this.assetAmount = obj.assetAmount;
+	this.addresses = obj.addresses;
+	this.chosenAssetId = obj.chosenAssetId;
+	this.assetAmount = obj.assetAmount;
 };
 
 //Status messages
 WalletStore.prototype.resetStatus = function () {
-  this.updatedStatus = null;
-  this.error = null;
+	this.updatedStatus = null;
+	this.error = null;
 };
 
 WalletStore.prototype.onActionFailed = function (err) {
-  this.error = 'There was an error: ' + JSON.stringify(err);
-  this.updatedStatus = null;
+	this.error = 'There was an error: ' + JSON.stringify(err);
+	this.updatedStatus = null;
 };
 
 WalletStore.prototype.onIssueAssetSuccess = function (asset) {
-  this.updatedStatus = 'Issued Asset successfully. Asset Id: ' + (asset && asset.assetId);
-  this.error = null;
+	this.updatedStatus = 'Issued Asset successfully. Asset Id: ' + (asset && asset.assetId);
+	this.error = null;
 };
 
 WalletStore.prototype.onSendAssetSuccess = function (sentAsset) {
-  this.updatedStatus = 'Sent Asset successfully. Transaction Id: ' + (sentAsset && sentAsset.txid);
-  this.error = null;
+	this.updatedStatus = 'Sent Asset successfully. Transaction Id: ' + (sentAsset && sentAsset.txid);
+	this.error = null;
 };
 
 module.exports = alt.createStore(WalletStore);

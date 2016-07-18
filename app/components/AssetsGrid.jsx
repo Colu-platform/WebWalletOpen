@@ -5,8 +5,8 @@ var consts = require('../consts.js');
 
 var AssetsGrid = React.createClass({
 	getInitialState: function() {
-        return WalletStore.getState();
-    },
+		return WalletStore.getState();
+	},
 	componentDidMount: function() {
 		WalletStore.listen(this.onChange);
 	},

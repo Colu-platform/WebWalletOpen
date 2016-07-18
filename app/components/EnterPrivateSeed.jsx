@@ -3,14 +3,14 @@ var ColuActions = require('../actions/ColuActions');
 
 var EnterPrivateSeed = React.createClass({
 	componentDidMount: function() {
-        WalletStore.listen(this.onChange);
-    },
-    onChange: function(state) {
-        this.setState(state);
-    },
-    componentWillUnmount: function() {
-        WalletStore.unlisten(this.onChange);
-    },
+		WalletStore.listen(this.onChange);
+	},
+	onChange: function(state) {
+		this.setState(state);
+	},
+	componentWillUnmount: function() {
+		WalletStore.unlisten(this.onChange);
+	},
 	handleSubmit: function (e) {
 		var privateSeed = this.refs.privateSeed.value;
 
@@ -22,16 +22,16 @@ var EnterPrivateSeed = React.createClass({
 	render: function () {
 		//Build the Enter Private Seed form
 		return (
-		    <form className="enter-privateseed-form">
-		        <div className = "group privateseed">
-		            <div className="privateseed-input">
-		            	<input name="privateSeed" ref="privateSeed" />
-		            	<span className="bar"></span>
-		            	<label className="enter">Private Seed</label>
-		            </div>
-		        	<button className="btn" type="submit" ref="submitButton" onClick={this.handleSubmit}>VIEW WALLET</button>
-		        </div>
-		    </form>
+			<form className="enter-privateseed-form">
+				<div className = "group privateseed">
+					<div className="privateseed-input">
+						<input name="privateSeed" ref="privateSeed" />
+						<span className="bar"></span>
+						<label className="enter">Private Seed</label>
+					</div>
+					<button className="btn" type="submit" ref="submitButton" onClick={this.handleSubmit}>VIEW WALLET</button>
+				</div>
+			</form>
 		);
 	}
 });
