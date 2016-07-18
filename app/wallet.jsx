@@ -1,3 +1,5 @@
+var React = require('react');
+var ReactDOM = require('react-dom');
 var alt = require('alt');
 // Components
 var EnterPrivateSeed = require('./components/EnterPrivateSeed.jsx');

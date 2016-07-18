@@ -17,6 +17,7 @@ var gulp = require("gulp"),
 var dependencies = [
   'alt',
   'react',
+  'react-dom',
   'react-router'
 ];
 

@@ -1,3 +1,4 @@
+var React = require('react');
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
 var Asset = require('./Asset.jsx');

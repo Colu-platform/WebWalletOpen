@@ -1,3 +1,5 @@
+var React = require('react');
+
 var WalletStore = require('../stores/WalletStore');
 var GeneralActions = require('../actions/GeneralActions');
 

@@ -1,3 +1,4 @@
+var React = require('react');
 var Status = require('./Status.jsx');
 
 var ColuActions = require('../actions/ColuActions');

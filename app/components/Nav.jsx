@@ -1,3 +1,4 @@
+var React = require('react');
 var WalletStore = require('../stores/WalletStore');
 
 import { Link } from 'react-router'

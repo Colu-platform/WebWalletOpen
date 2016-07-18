@@ -1,3 +1,5 @@
+var React = require('react');
+
 var AssetsGrid = require('./AssetsGrid.jsx');
 var Status = require('./Status.jsx');
 var consts = require('../consts.js');
