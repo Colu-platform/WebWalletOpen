@@ -31,7 +31,7 @@ var Status = React.createClass({
 			);
 		} else {
 			return (
-				<div className="status" />
+				<div className="hide" />
 			);
 		}
 	}

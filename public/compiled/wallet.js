@@ -50,14 +50,31 @@ function getAssets(callback) {
 ColuActions.prototype.coluInit = function (privateSeed) {
 	var settings = {
 		network: 'testnet',
-		privateSeed: privateSeed
+		privateSeed: privateSeed,
+		events: true,
+		eventsSecure: false
 	},
 	    address,
 	    that = this;
+
+	function getAssetsCallback(err, assets) {
+		if (err) {
+			return that.actions.actionFailed(err);
+		}
+		//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
+		that.actions.coluInitSuccess({ privateSeed: privateSeed, assets: assets, error: null });
+	}
+
 	try {
 		ColuActions.colu = new Colu(settings);
 
 		ColuActions.colu.on('connect', function () {
+			//When a new transaction happens (issue, send, receive etc) we get the updated assets
+			ColuActions.colu.onNewCCTransaction(function (transaction) {
+				if (transaction) {
+					getAssets(getAssetsCallback);
+				}
+			});
 			//If no private key is entered, the wallet initialized using a random private key, we retrieve it
 			if (!privateSeed) {
 				privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
@@ -65,13 +82,7 @@ ColuActions.prototype.coluInit = function (privateSeed) {
 				address = ColuActions.colu.hdwallet.getAddress();
 			}
 
-			getAssets(function callback(err, assets) {
-				if (err) {
-					return that.actions.actionFailed(err);
-				}
-				//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
-				that.actions.coluInitSuccess({ privateSeed: privateSeed, assets: assets });
-			});
+			getAssets(getAssetsCallback);
 		});
 
 		ColuActions.colu.init();
@@ -304,9 +315,14 @@ var React = require('react');
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
 
+var Status = require('./Status.jsx');
+
 var EnterPrivateSeed = React.createClass({
 	displayName: 'EnterPrivateSeed',
 
+	getInitialState: function getInitialState() {
+		return WalletStore.getState();
+	},
 	componentDidMount: function componentDidMount() {
 		WalletStore.listen(this.onChange);
 	},
@@ -348,18 +364,18 @@ var EnterPrivateSeed = React.createClass({
 					{ className: 'btn', type: 'submit', ref: 'submitButton', onClick: this.handleSubmit },
 					'VIEW WALLET'
 				)
-			)
+			),
+			React.createElement(Status, null)
 		);
 	}
 });
 
 module.exports = EnterPrivateSeed;
 
-},{"../actions/ColuActions":1,"../stores/WalletStore":13,"react":541}],7:[function(require,module,exports){
+},{"../actions/ColuActions":1,"../stores/WalletStore":13,"./Status.jsx":10,"react":541}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
-var Status = require('./Status.jsx');
 
 var ColuActions = require('../actions/ColuActions');
 var GeneralActions = require('../actions/GeneralActions');
@@ -458,15 +474,14 @@ var IssueAsset = React.createClass({
 					{ className: 'btn', type: 'submit' },
 					'SEND'
 				)
-			),
-			React.createElement(Status, null)
+			)
 		);
 	}
 });
 
 module.exports = IssueAsset;
 
-},{"../actions/ColuActions":1,"../actions/GeneralActions":2,"../stores/WalletStore":13,"./Status.jsx":10,"react":541}],8:[function(require,module,exports){
+},{"../actions/ColuActions":1,"../actions/GeneralActions":2,"../stores/WalletStore":13,"react":541}],8:[function(require,module,exports){
 'use strict';
 
 var _reactRouter = require('react-router');
@@ -517,7 +532,6 @@ module.exports = Nav;
 var React = require('react');
 
 var AssetsGrid = require('./AssetsGrid.jsx');
-var Status = require('./Status.jsx');
 var consts = require('../consts.js');
 
 var ColuActions = require('../actions/ColuActions');
@@ -618,15 +632,14 @@ var SendAsset = React.createClass({
 					{ className: 'btn', type: 'submit' },
 					'SEND'
 				)
-			),
-			React.createElement(Status, null)
+			)
 		);
 	}
 });
 
 module.exports = SendAsset;
 
-},{"../actions/ColuActions":1,"../actions/GeneralActions":2,"../consts.js":12,"../stores/WalletStore":13,"./AssetsGrid.jsx":5,"./Status.jsx":10,"react":541}],10:[function(require,module,exports){
+},{"../actions/ColuActions":1,"../actions/GeneralActions":2,"../consts.js":12,"../stores/WalletStore":13,"./AssetsGrid.jsx":5,"react":541}],10:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -663,7 +676,7 @@ var Status = React.createClass({
 				this.state && this.state.error
 			);
 		} else {
-			return React.createElement('div', { className: 'status' });
+			return React.createElement('div', { className: 'hide' });
 		}
 	}
 });
@@ -731,10 +744,10 @@ module.exports = WalletRouter;
 "use strict";
 
 var consts = {
-    assetRenderStyle: {
-        grid: 1,
-        list: 2
-    }
+	assetRenderStyle: {
+		grid: 1,
+		list: 2
+	}
 };
 
 module.exports = consts;
@@ -757,6 +770,7 @@ function WalletStore() {
 WalletStore.prototype.onColuInitSuccess = function (obj) {
 	this.privateSeed = obj.privateSeed;
 	this.assets = obj.assets;
+	this.error = obj.error;
 	localStorage.setItem('privateSeed', obj.privateSeed);
 };
 
@@ -777,7 +791,7 @@ WalletStore.prototype.resetStatus = function () {
 };
 
 WalletStore.prototype.onActionFailed = function (err) {
-	this.error = 'There was an error: ' + JSON.stringify(err);
+	this.error = 'There was an error: ' + err.toString();
 	this.updatedStatus = null;
 };
 
@@ -798,7 +812,7 @@ module.exports = alt.createStore(WalletStore);
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var alt = require('alt');
+
 // Components
 var EnterPrivateSeed = require('./components/EnterPrivateSeed.jsx');
 var WalletRouter = require('./components/WalletRouter.jsx');
@@ -808,9 +822,6 @@ var WalletStore = require('./stores/WalletStore');
 
 //Actions
 var ColuActions = require('./actions/ColuActions');
-
-//Constants
-var consts = require('./consts.js');
 
 //Create the wallet
 var Wallet = React.createClass({
@@ -824,7 +835,7 @@ var Wallet = React.createClass({
 			sentAsset: 0,
 			assetIdsForAddress: [],
 			updatedStatus: null,
-			coluReady: null
+			hasWallet: localStorage.getItem('privateSeed')
 		};
 	},
 	componentWillMount: function componentWillMount() {
@@ -848,8 +859,6 @@ var Wallet = React.createClass({
 		WalletStore.unlisten(this.onChange);
 	},
 	render: function render() {
-		var hasWallet = localStorage.getItem('privateSeed');
-
 		if (this.state.privateSeed) {
 			//Returning user (because initialized with currentPrivateSeed): When colu is ready return the wallet content
 			return React.createElement(
@@ -867,7 +876,7 @@ var Wallet = React.createClass({
 					React.createElement(WalletRouter, null)
 				)
 			);
-		} else if (hasWallet) {
+		} else if (this.state.hasWallet) {
 			//Returning user but colu is not ready yet, display loading
 			return React.createElement(
 				'div',
@@ -884,7 +893,7 @@ var Wallet = React.createClass({
 
 ReactDOM.render(React.createElement(Wallet, null), document.getElementById('display'));
 
-},{"./actions/ColuActions":1,"./components/EnterPrivateSeed.jsx":6,"./components/WalletRouter.jsx":11,"./consts.js":12,"./stores/WalletStore":13,"alt":17,"react":541,"react-dom":361}],15:[function(require,module,exports){
+},{"./actions/ColuActions":1,"./components/EnterPrivateSeed.jsx":6,"./components/WalletRouter.jsx":11,"./stores/WalletStore":13,"react":541,"react-dom":361}],15:[function(require,module,exports){
 module.exports = after
 
 function after(count, callback, err_cb) {

@@ -14,6 +14,7 @@ function WalletStore() {
 WalletStore.prototype.onColuInitSuccess = function(obj) {
 	this.privateSeed = obj.privateSeed;
 	this.assets = obj.assets;
+	this.error = obj.error;
 	localStorage.setItem( 'privateSeed', obj.privateSeed );
 }
 
@@ -35,7 +36,7 @@ WalletStore.prototype.resetStatus = function() {
 }
 
 WalletStore.prototype.onActionFailed = function(err) {
-	this.error = 'There was an error: ' + JSON.stringify(err);
+	this.error = 'There was an error: ' + err.toString();
 	this.updatedStatus = null;
 }
 

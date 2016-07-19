@@ -1,5 +1,4 @@
 var React = require('react');
-var Status = require('./Status.jsx');
 
 var ColuActions = require('../actions/ColuActions');
 var GeneralActions = require('../actions/GeneralActions');
@@ -67,7 +66,6 @@ var IssueAsset = React.createClass({
 	
 					<button className="btn" type="submit" >SEND</button>
 				</form>
-				<Status />
 			</div>
 		);
 	}

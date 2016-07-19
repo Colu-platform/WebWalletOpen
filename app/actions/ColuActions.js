@@ -35,7 +35,6 @@ function removeDuplicates(arr, prop) {
 
 //---------------------- COLU FUNCTIONS --------------------//
 
-
 //Get all the assets a private seed has in his wallet
 function getAssets(callback) {
 	var that = this,
@@ -54,19 +53,35 @@ function getAssets(callback) {
 	});
 }
 
-
 //Initialize Colu sdk
 ColuActions.prototype.coluInit = function(privateSeed) {
   var settings = {
 		network: 'testnet',
-		privateSeed: privateSeed
+		privateSeed: privateSeed,
+		events: true,
+		eventsSecure: false
 	},
 	address,
 	that = this;
+
+	function getAssetsCallback(err, assets) {
+		if (err) {
+			return that.actions.actionFailed(err);
+		}
+		//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
+		that.actions.coluInitSuccess({privateSeed: privateSeed, assets: assets, error: null});
+	}
+
 	try {
 		ColuActions.colu = new Colu(settings);
 	
 		ColuActions.colu.on('connect', function () {
+			//When a new transaction happens (issue, send, receive etc) we get the updated assets
+			ColuActions.colu.onNewCCTransaction(function (transaction) {
+				if (transaction) {
+					getAssets(getAssetsCallback);
+				}
+			});
 			//If no private key is entered, the wallet initialized using a random private key, we retrieve it
 			if (!privateSeed) {
 				privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
@@ -74,15 +89,10 @@ ColuActions.prototype.coluInit = function(privateSeed) {
 				address = ColuActions.colu.hdwallet.getAddress();
 			}
 	
-			getAssets(function callback(err, assets) {
-				if (err) {
-					return that.actions.actionFailed(err);
-				}
-				//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
-				that.actions.coluInitSuccess({privateSeed: privateSeed, assets: assets});
-			});
+			getAssets(getAssetsCallback);
+
 		});
-	
+
 		ColuActions.colu.init();
 	
 	} catch (e) {
@@ -93,7 +103,7 @@ ColuActions.prototype.coluInit = function(privateSeed) {
 //Issue a new asset
 ColuActions.prototype.issueAsset = function(asset) {
 	var that = this;
-  
+
 	ColuActions.colu.issueAsset(asset, function (err, body) {
 		if (err) {
 			return that.actions.actionFailed(err);

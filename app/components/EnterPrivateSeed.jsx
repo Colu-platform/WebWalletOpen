@@ -2,7 +2,12 @@ var React = require('react');
 var WalletStore = require('../stores/WalletStore');
 var ColuActions = require('../actions/ColuActions');
 
+var Status = require('./Status.jsx');
+
 var EnterPrivateSeed = React.createClass({
+	getInitialState: function() {
+		return WalletStore.getState();
+	},
 	componentDidMount: function() {
 		WalletStore.listen(this.onChange);
 	},
@@ -32,6 +37,7 @@ var EnterPrivateSeed = React.createClass({
 					</div>
 					<button className="btn" type="submit" ref="submitButton" onClick={this.handleSubmit}>VIEW WALLET</button>
 				</div>
+				<Status/>
 			</form>
 		);
 	}

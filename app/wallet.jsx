@@ -1,6 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var alt = require('alt');
+
 // Components
 var EnterPrivateSeed = require('./components/EnterPrivateSeed.jsx');
 var WalletRouter = require('./components/WalletRouter.jsx');
@@ -10,9 +10,6 @@ var WalletStore = require('./stores/WalletStore');
 
 //Actions
 var ColuActions = require('./actions/ColuActions');
-
-//Constants
-var consts = require('./consts.js');
 
 //Create the wallet
 var Wallet = React.createClass({
@@ -24,7 +21,7 @@ var Wallet = React.createClass({
 			sentAsset: 0,
 			assetIdsForAddress: [],
 			updatedStatus: null,
-			coluReady: null
+			hasWallet: localStorage.getItem('privateSeed')
 		};
 	},
 	componentWillMount: function() {
@@ -48,8 +45,6 @@ var Wallet = React.createClass({
 		WalletStore.unlisten(this.onChange);
 	},
 	render: function() {
-		var hasWallet = localStorage.getItem('privateSeed');
-		
 		if (this.state.privateSeed) {//Returning user (because initialized with currentPrivateSeed): When colu is ready return the wallet content
 			return (
 				<div>
@@ -60,7 +55,7 @@ var Wallet = React.createClass({
 					</div>
 				</div>
 			);
-		} else if (hasWallet) {//Returning user but colu is not ready yet, display loading
+		} else if (this.state.hasWallet) {//Returning user but colu is not ready yet, display loading
 			return (
 				<div>
 					<EnterPrivateSeed />

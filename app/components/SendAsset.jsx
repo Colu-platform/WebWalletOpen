@@ -1,7 +1,6 @@
 var React = require('react');
 
 var AssetsGrid = require('./AssetsGrid.jsx');
-var Status = require('./Status.jsx');
 var consts = require('../consts.js');
 
 var ColuActions = require('../actions/ColuActions');
@@ -70,7 +69,6 @@ var SendAsset = React.createClass({
 					</div>
 					<button className="btn" type="submit" >SEND</button>
 				</form>
-				<Status />
 			</div>
 		);
 	}
