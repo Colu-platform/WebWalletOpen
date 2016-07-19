@@ -59,7 +59,7 @@ var Wallet = React.createClass({
 			return (
 				<div>
 					<EnterPrivateSeed />
-				'loading...'
+				<p style={{textAlign:'center', color: '#4dd9b4'}}>loading...</p>
 				</div>
 			);
 		} else {//New user: display the enter private seed form only

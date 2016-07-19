@@ -1,3 +1,6 @@
+var React = require('react');
+var Router = require('react-router').Router;
+
 var IssueAsset = require('./IssueAsset.jsx');
 var AssetsGrid = require('./AssetsGrid.jsx');
 var Nav = require('./Nav.jsx');
@@ -5,11 +8,10 @@ var SendAsset = require('./SendAsset.jsx');
 
 var consts = require('../consts.js');
 
-import React, { Component } from 'react'
-import { Router, Route, Link, IndexRoute } from 'react-router'
 
-import createBrowserHistory from 'history/lib/createBrowserHistory';
-let history = createBrowserHistory();
+//{this.props.children} renders the active child route handler
+//The reason for nesting routes this particular way is because we are going to place
+//Nav menu (which is constant along all the routes) next to the active route, inside the Container component
 
 var Container = React.createClass({
 	render: function () {
@@ -22,16 +24,20 @@ var Container = React.createClass({
 	}
 })
 
+var routes = {
+    path: '/',
+    component: Container,
+    childRoutes: [
+        { path: '/issue', component: IssueAsset },
+        { path: '/assets', component: AssetsGrid, renderStyle: consts.assetRenderStyle.grid},
+        { path: '/sendAsset', component: SendAsset}
+    ]
+};
+
 var WalletRouter = React.createClass({
 	render: function () {
 		return (
-			<Router>
-				<Route path='/' history={history} component={Container}>
-					<Route path='/issue' component={IssueAsset} />
-					<Route path='/assets' component={AssetsGrid} renderStyle={consts.assetRenderStyle.grid} />
-					<Route path='/sendAsset' component={SendAsset} />
-				</Route>
-			</Router>
+			<Router routes={routes} />
 		);
 	}
 });

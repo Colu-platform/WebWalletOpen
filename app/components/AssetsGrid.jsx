@@ -28,20 +28,23 @@ var AssetsGrid = React.createClass({
 		var assetsGrid = (this.state && this.state.assets) ? this.state.assets.map(function(asset,i) {
 			if (renderStyle === consts.assetRenderStyle.grid) {
 				return (
-					<div key={'grid-row-' + i} className={'grid-row-' + i} >
-						<Asset renderStyle={consts.assetRenderStyle.grid} asset={asset} key={'grid-row-' + i} />
+					<div key={'grid-row-' + i}>
+						<Asset renderStyle={consts.assetRenderStyle.grid} asset={asset} />
 					</div>
 				);
 			} else if (renderStyle === consts.assetRenderStyle.list) {
 				return (
-					<Asset renderStyle={consts.assetRenderStyle.list} asset={asset}/>
+					<Asset key={'grid-row-' + i} renderStyle={consts.assetRenderStyle.list} asset={asset}/>
 				);
 			}
 		}) : '';
-		
+		var header = <Asset renderStyle={consts.assetRenderStyle.grid} asset={{address:'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT'}} />; 
 		if (renderStyle === consts.assetRenderStyle.grid) {
 			return (
 				<div className="assets-grid">
+					<div className="assets-header">
+						{header}
+					</div>
 					{assetsGrid}
 				</div>
 			);

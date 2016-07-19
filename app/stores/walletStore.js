@@ -13,7 +13,6 @@ function WalletStore() {
 //Colu
 WalletStore.prototype.onColuInitSuccess = function(obj) {
 	this.privateSeed = obj.privateSeed;
-	this.assets = obj.assets;
 	this.error = obj.error;
 	localStorage.setItem( 'privateSeed', obj.privateSeed );
 }

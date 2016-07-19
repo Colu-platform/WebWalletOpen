@@ -35,24 +35,6 @@ function removeDuplicates(arr, prop) {
 
 //---------------------- COLU FUNCTIONS --------------------//
 
-//Get all the assets a private seed has in his wallet
-function getAssets(callback) {
-	var that = this,
-		assets = [];
-	ColuActions.colu.getAssets(function (err, body) {
-		if (err) {
-			return callback(err);
-		}
-	
-		assets = body;
-	
-		//insert the header into the assets array
-		assets.unshift({address:'ADDRESS', assetId: 'ASSET ID', amount: 'AMOUNT'});
-	
-		callback(null, assets);
-	});
-}
-
 //Initialize Colu sdk
 ColuActions.prototype.coluInit = function(privateSeed) {
   var settings = {
@@ -61,15 +43,14 @@ ColuActions.prototype.coluInit = function(privateSeed) {
 		events: true,
 		eventsSecure: false
 	},
-	address,
 	that = this;
 
 	function getAssetsCallback(err, assets) {
 		if (err) {
-			return that.actions.actionFailed(err);
+			return that.actions.actionFailed(JSON.stringify(err));
 		}
-		//If we have successfully initialized the wallet, update the state with the private seed (to be displayed in the wallet content)
-		that.actions.coluInitSuccess({privateSeed: privateSeed, assets: assets, error: null});
+		//Update the store with assets
+		that.actions.getAssetsSuccess({assets: assets});
 	}
 
 	try {
@@ -79,17 +60,19 @@ ColuActions.prototype.coluInit = function(privateSeed) {
 			//When a new transaction happens (issue, send, receive etc) we get the updated assets
 			ColuActions.colu.onNewCCTransaction(function (transaction) {
 				if (transaction) {
-					getAssets(getAssetsCallback);
+					ColuActions.colu.getAssets(getAssetsCallback);
 				}
 			});
 			//If no private key is entered, the wallet initialized using a random private key, we retrieve it
 			if (!privateSeed) {
 				privateSeed = ColuActions.colu.hdwallet.getPrivateSeed();
 				//get an address to be able to do transactions
-				address = ColuActions.colu.hdwallet.getAddress();
+				ColuActions.colu.hdwallet.getAddress();
 			}
-	
-			getAssets(getAssetsCallback);
+			//If we have successfully initialized the wallet, update the store with the private seed (to be displayed in the wallet content)
+			that.actions.coluInitSuccess({privateSeed: privateSeed, error: null});
+			//Get all the assets a private seed has in his wallet
+			ColuActions.colu.getAssets(getAssetsCallback);
 
 		});
 
@@ -106,7 +89,7 @@ ColuActions.prototype.issueAsset = function(asset) {
 
 	ColuActions.colu.issueAsset(asset, function (err, body) {
 		if (err) {
-			return that.actions.actionFailed(err);
+			return that.actions.actionFailed(JSON.stringify(err));
 		}
 		that.actions.issueAssetSuccess(body);
 	});
@@ -126,7 +109,7 @@ ColuActions.prototype.sendAsset = function(assetInfo) {
 		};
 	ColuActions.colu.sendAsset(asset, function (err, body) {
 		if (err) {
-			return that.actions.actionFailed(err);
+			return that.actions.actionFailed(JSON.stringify(err));
 		}
 		that.actions.sendAssetSuccess(body); 
 	});
