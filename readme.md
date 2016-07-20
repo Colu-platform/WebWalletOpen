@@ -118,7 +118,8 @@ We subscribe to our Alt’s store (WalletStore) in componentDidMount method and 
 
 ### 5.2. Wallet Router
 Our wallet’s router is a component that returns Router (we use  Router from react-router). 
-```var routes = {
+```
+var routes = {
     path: '/',
     component: Container,
     childRoutes: [
@@ -334,10 +335,4 @@ viewAssetHistory - view asset transactions
 register/login (backup/restore) - allow a colu user to login and fetch their encrypted seed from colu account
 Multiple wallet support - allow switching between wallets and networks
 
-
-
-License
-----
-
-MIT
 
