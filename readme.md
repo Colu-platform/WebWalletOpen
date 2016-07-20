@@ -76,7 +76,9 @@ In the same directory (public) create a new file wallet.html and paste:
 
 In the project root, create a new folder app.
 Then inside app create 3 new folders actions, components, stores and 3 empty files alt.js, wallet.jsx and consts.js. Your project directory should look like this:
-
+<br>
+![Alt text](/public/images/image00.png "project dir")
+<br>
 ## 4. A bit about React and Alt
 ### 4.1 React
 React is a JavaScript library for creating user interfaces by Facebook and Instagram. Many people choose to think of React as the V in MVC.
@@ -91,20 +93,25 @@ React generates HTML and component trees directly from the JavaScript code such 
 In order to make this easier, FB added a very simple, optional HTML-like syntax to create these React tree nodes.
 JSX lets you create JavaScript objects using HTML syntax. Using gulp, jsx in our app is then converted to regular js to make it browser readable.
 ### 4.3 Alt
+<br>
+![Alt text](/public/images/image02.png "Alt")
+<br>
 We will be using a Flux library called Alt - A true flux compliant library in a very small size. Actions are fire and forget, stores have no setters, you get constants, and Flux's single dispatcher. Flux is the application architecture that was developed at Facebook for building scalable client-side web applications. Data always flows one way through the application and it is picked up along the way by various subscribers (stores) who are listening to it. 
 
 
 
 ## 5. Colu wallet React structure
 Our wallet will look like this:
-
+<br>
+![Alt text](/public/images/image03.png "Colu alt flow")
+<br>
 It consists of the main element ‘display’ and this is where our main wallet container is going to render (see line: ReactDOM.render(<Wallet />, document.getElementById('display')); in wallet.jsx). The main wallet container consists of two main elements: the Private Seed input form and Wallet Content. Wallet Content has a navigation menu (Issue, View Assets and Send An Asset) while each menu link loads its specific view (Asset Grid, Issue, Asset and Send Asset views). These are our basic components. 
 
 ### 5.1. Main container (entry point)
 Lets look at our main wallet container wallet.jsx:
 We create the component with var Wallet = React.createClass and render it with `ReactDOM.render(<Wallet />, document.getElementById('display'))`. 
-`render()`:  All components in React have a render() method. It always returns a single child element. The HTML markup above is JSX. As far syntax goes, it is just slightly different from HTML, for example className instead of class to define CSS classes. 
-`componentDidMount()`: This method in React is the closest thing to $(document).ready in jQuery. This method runs once (only on the client) immediately after initial rendering of the component. This is where you would typically initialize third-party libraries and jQuery plugins.
+* `render()`:  All components in React have a render() method. It always returns a single child element. The HTML markup above is JSX. As far syntax goes, it is just slightly different from HTML, for example className instead of class to define CSS classes. 
+* `componentDidMount()`: This method in React is the closest thing to $(document).ready in jQuery. This method runs once (only on the client) immediately after initial rendering of the component. This is where you would typically initialize third-party libraries and jQuery plugins.
 
 [app/wallet.jsx](app/wallet.jsx)
 
@@ -324,8 +331,9 @@ module.exports = alt.createStore(WalletStore);
 ```
 
 This is what the flow looks like:
-
-
+<br>
+![Alt text](/public/images/image01.png "Colu alt flow")
+<br>
 TODO: 
 
 getAssetInfo - build data structure on the init and save it in state, and then just get the info on the specific asset
