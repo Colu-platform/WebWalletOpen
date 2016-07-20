@@ -178,7 +178,6 @@ module.exports = new Alt();
 
 var React = require('react');
 var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
 var consts = require('../consts.js');
 
 var Asset = React.createClass({
@@ -229,7 +228,7 @@ var Asset = React.createClass({
 
 module.exports = Asset;
 
-},{"../actions/ColuActions":1,"../consts.js":12,"../stores/WalletStore":13,"react":541}],5:[function(require,module,exports){
+},{"../consts.js":12,"../stores/WalletStore":13,"react":541}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');

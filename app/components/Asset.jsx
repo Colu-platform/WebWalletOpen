@@ -1,6 +1,5 @@
 var React = require('react');
 var WalletStore = require('../stores/WalletStore');
-var ColuActions = require('../actions/ColuActions');
 var consts = require('../consts.js');
 
 var Asset = React.createClass({
